@@ -1,0 +1,50 @@
+<div class="row top-menu">
+	<div class="col-md-6">
+		<a href="{{url_for('mainPage')}}">
+			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Mark
+		</a>
+	</div>
+	<div class="col-md-6 text-right">
+
+
+
+		{%  if 'username' not in login_session %}
+
+
+	<a href="{{url_for('loginHomePage')}}"><button class="button_sign colorBlue">Login</button></a>
+
+
+{% else %}
+
+
+
+		<a href="{{url_for('gdisconnect')}}"><button class="button_sign colorGray">logout</button></a>
+
+
+
+{% endif %}
+	</div>
+</div>
+
+
+
+
+
+<style>
+
+.button_sign {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.colorBlue {background-color: #008CBA;} /* Blue */
+.colorGray {background-color: #e7e7e7; color: black;} /* Gray */
+</style>
