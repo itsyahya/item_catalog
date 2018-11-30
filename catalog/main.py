@@ -1,10 +1,8 @@
-import os
-import tempfile
 
-from flask import Flask, render_template, request, \
+
+from flask import Flask, render_template, request,\
     redirect, jsonify, url_for, flash, session as login_session
 from sqlalchemy import asc
-from .Database_setup import Markets, ItemsInMarket, User,session,addAndCommit,deleteAndCommit
 
 import random
 import string
@@ -16,9 +14,13 @@ import json
 from flask import make_response
 import requests
 
-#from util import addAndCommit, session, deleteAndCommit, dataBaseName
 
-app = Flask(__name__)
+from  database import  db,app,User,ItemsInMarket,Markets,addAndCommit,deleteAndCommit
+
+
+
+
+
 
 # fetch and read client_secrets file provide by google.
 CLIENT_ID = json.loads(
@@ -181,20 +183,20 @@ def createUser(login_session):
         'email'])
     # add object to data base and commit
     addAndCommit(newUser)
-    user = session.query(User).filter_by(email=login_session['email']).one()
+    user = db.session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
 
 # fetch user object by it is ID ;
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
+    user = db.session.query(User).filter_by(id=user_id).one()
     return user
 
 
 # fetch userID by it is unique email
 def getUserID(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = db.session.query(User).filter_by(email=email).one()
         return user.id
     except Exception:
         return None
@@ -207,7 +209,7 @@ def mainPage():
     # show all markets
     # use asc to show markets from A to Z in sequence
 
-    markets = session.query(Markets).order_by(asc(Markets.name))
+    markets = db.session.query(Markets).order_by(asc(Markets.name))
     return render_template('markets.html',
                            markets=markets, login_session=login_session)
 
@@ -216,8 +218,8 @@ def mainPage():
 @app.route('/markets/<int:market_id>/items')
 def showTargetMarket(market_id):
     # show all items in this market
-    market = session.query(Markets).filter_by(id=market_id).one()
-    items = session.query(ItemsInMarket).filter_by(market_id=market.id).all()
+    market = db.session.query(Markets).filter_by(id=market_id).one()
+    items = db.session.query(ItemsInMarket).filter_by(market_id=market.id).all()
     try:
         '''if this the first time user visit the site
         the login_session will not have value.So this will fall the site;'''
@@ -241,7 +243,7 @@ def editMarket(market_id):
         return redirect('/login')
 
     # edit target market
-    editedMarket = session.query(Markets) \
+    editedMarket = db.session.query(Markets) \
         .filter_by(id=market_id).one()
 
     currentUser = getUserInfo(editedMarket.user_id)
@@ -273,7 +275,7 @@ def deleteMarket(market_id):
     if 'username' not in login_session:
         return redirect('/login')
     # delete this market
-    finalDayOfTheMarket = session.query(Markets) \
+    finalDayOfTheMarket = db.session.query(Markets) \
         .filter_by(id=market_id).one()
 
     # if the current user is creator will pass this
@@ -318,7 +320,7 @@ def newMarket():
 # json for market
 @app.route('/markets/json')
 def marketJson():
-    markets = session.query(Markets).all()
+    markets = db.session.query(Markets).all()
     return jsonify(markets=[x.serialize for x in markets])
 
 
@@ -332,9 +334,9 @@ def editItem(market_id, item_id):
 
     # edit an item
 
-    currentMarket = session.query(Markets). \
+    currentMarket = db.session.query(Markets). \
         filter_by(id=market_id).one()
-    targetItem = session.query(ItemsInMarket). \
+    targetItem = db.session.query(ItemsInMarket). \
         filter_by(id=item_id).one()
 
     if targetItem.user_id != login_session['user_id']:
@@ -371,9 +373,9 @@ def deleteItem(market_id, item_id):
         return redirect('/login')
 
     # delete an item
-    currentMarket = session.query(Markets). \
+    currentMarket = db.session.query(Markets). \
         filter_by(id=market_id).one()
-    targetItemToDelete = session.query(ItemsInMarket). \
+    targetItemToDelete = db.session.query(ItemsInMarket). \
         filter_by(id=item_id).one()
 
     # if the current user is creator will pass this
@@ -403,7 +405,7 @@ def newItem(market_id):
         return redirect('/login')
     # new item by the target id of the market
 
-    currentMarketID = session.query(Markets). \
+    currentMarketID = db.session.query(Markets). \
         filter_by(id=market_id).one()
 
     # if the current user is creator will pass this
@@ -444,9 +446,9 @@ def itemsInMarket(market_id):
     after that select any id and put it in the link of this route
     like this ---> http://localhost:5000/markets/items/4/json/
     """
-    market = session.query(Markets). \
+    market = db.session.query(Markets). \
         filter_by(id=market_id).one()
-    items = session.query(ItemsInMarket). \
+    items = db.session.query(ItemsInMarket). \
         filter_by(market_id=market.id).all()
     m = {
 
@@ -460,7 +462,7 @@ def itemsInMarket(market_id):
 
 @app.route('/markets/users/json')
 def userJson():
-    users = session.query(User).all()
+    users = db.session.query(User).all()
     return jsonify([x.serialize for x in users])
 
 
@@ -471,9 +473,9 @@ def userJsonData(user_id):
     example query
     this -->   http://localhost:5000/markets/users/3/json
     """
-    user = session.query(User).filter_by(id=user_id).one()
-    market = session.query(Markets).filter_by(user_id=user.id).all()
-    items = session.query(ItemsInMarket).filter_by(user_id=user.id).all()
+    user = db.session.query(User).filter_by(id=user_id).one()
+    market = db.session.query(Markets).filter_by(user_id=user.id).all()
+    items = db.session.query(ItemsInMarket).filter_by(user_id=user.id).all()
 
     jsn = {
         'Name ': user.name,
@@ -486,11 +488,7 @@ def userJsonData(user_id):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' + os.path.join(
-        tempfile.gettempdir(), 'markets.db')
 
-    print( 'xxx  '+app.config['SQLALCHEMY_DATABASE_URI'])
-
+    print('xxx  ' + app.config['SQLALCHEMY_DATABASE_URI'])
     app.debug = True
     app.run()

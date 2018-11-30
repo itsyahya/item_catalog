@@ -5,44 +5,22 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
-base = declarative_base()
-# name of the Database
-base.metadata.clear()
-oldDBN = 'sqlite:///markets.db'
-
-path = os.path.abspath(os.getcwd()) + "/markets.db"
-
-newDBN = 'sqlite:///' + path
-
-print(newDBN)
-
-
-# create  engine
-engine = create_engine(newDBN)
-# just import the session (:
-session = scoped_session(sessionmaker(bind=engine))
-
-
-
-
-def addAndCommit(x):
-    if x is not None:
-        session.add(x)
-        session.commit()
-    else:
-        print('Null Value )-: at Line 18 in class util.py  [ %s ]' % x)
-
-
-def deleteAndCommit(x):
-    if x is not None:
-        session.delete(x)
-        session.commit()
-    else:
-        print('Null Value )-: at Line 26 in class util.py  [ %s ]' % x)
-
-
-
-
+# base = declarative_base()
+# # name of the Database
+# base.metadata.clear()
+# oldDBN = 'sqlite:///markets.db'
+#
+# path = os.path.abspath(os.getcwd()) + "/markets.db"
+#
+# newDBN = 'sqlite:///' + path
+#
+# print(newDBN)
+#
+#
+# # create  engine
+# engine = create_engine(newDBN)
+# # just import the session (:
+# session = scoped_session(sessionmaker(bind=engine))
 
 
 class User(base):
@@ -106,6 +84,6 @@ class ItemsInMarket(base):
         }
 
 
-engine = create_engine(newDBN)
+engine = create_engine(dataBaseName)
 
 base.metadata.create_all(engine)
