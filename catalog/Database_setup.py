@@ -1,31 +1,11 @@
 import os
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import relationship,
 from sqlalchemy import create_engine
+from util import session,dataBaseName,base
 
 
-base = declarative_base()
-# name of the Database
-oldDataBaseName = 'sqlite:///markets.db'
-
-
-path = os.path.abspath(os.getcwd())+"/markets.db"
-
-dataBaseName = 'sqlite:///'+path
-
-print(dataBaseName)
-
-
-x = os.environ.get('sqlite:///markets.db')
-
-
-
-# create  engine
-engine = create_engine(oldDataBaseName)
-# just import the session (:
-session = scoped_session(sessionmaker(bind=engine))
 
 
 def addAndCommit(x):

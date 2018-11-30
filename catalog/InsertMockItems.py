@@ -1,30 +1,7 @@
 import os
 
-from Database_setup import Markets, ItemsInMarket
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
-
-base = declarative_base()
-# name of the Database
-oldDataBaseName = 'sqlite:///markets.db'
-
-
-path = os.path.abspath(os.getcwd())+"/markets.db"
-
-dataBaseName = 'sqlite:///'+path
-
-print(dataBaseName)
-
-
-x = os.environ.get('sqlite:///markets.db')
-
-
-
-# create  engine
-engine = create_engine(oldDataBaseName)
-# just import the session (:
-session = scoped_session(sessionmaker(bind=engine))
+from .Database_setup import Markets, ItemsInMarket
+from util import session,dataBaseName,base
 
 
 def addAndCommit(x):
