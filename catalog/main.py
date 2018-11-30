@@ -1,9 +1,10 @@
 import os
+import tempfile
 
 from flask import Flask, render_template, request, \
     redirect, jsonify, url_for, flash, session as login_session
 from sqlalchemy import asc
-from Database_setup import Markets, ItemsInMarket, User
+from .Database_setup import Markets, ItemsInMarket, User,session,addAndCommit,deleteAndCommit
 
 import random
 import string
@@ -15,8 +16,7 @@ import json
 from flask import make_response
 import requests
 
-
-from .util import addAndCommit,session,deleteAndCommit,dataBaseName
+#from util import addAndCommit, session, deleteAndCommit, dataBaseName
 
 app = Flask(__name__)
 
@@ -487,6 +487,10 @@ def userJsonData(user_id):
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = dataBaseName
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://' + os.path.join(
+        tempfile.gettempdir(), 'markets.db')
+
+    print( 'xxx  '+app.config['SQLALCHEMY_DATABASE_URI'])
+
     app.debug = True
     app.run()

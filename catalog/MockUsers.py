@@ -1,7 +1,7 @@
 import os
 
-from Database_setup import User, Markets, ItemsInMarket
-from util import addAndCommit
+from .Database_setup import User, Markets, ItemsInMarket,addAndCommit
+
 
 
 

@@ -1,23 +1,7 @@
 import os
 
-from .Database_setup import Markets, ItemsInMarket
-from util import session,dataBaseName,base
+from .Database_setup import Markets, ItemsInMarket,addAndCommit
 
-
-def addAndCommit(x):
-    if x is not None:
-        session.add(x)
-        session.commit()
-    else:
-        print('Null Value )-: at Line 18 in class util.py  [ %s ]' % x)
-
-
-def deleteAndCommit(x):
-    if x is not None:
-        session.delete(x)
-        session.commit()
-    else:
-        print('Null Value )-: at Line 26 in class util.py  [ %s ]' % x)
 
 apple = Markets(name="Apple")
 

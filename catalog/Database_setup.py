@@ -1,9 +1,26 @@
 import os
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship,
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
-from util import session,dataBaseName,base
+
+base = declarative_base()
+# name of the Database
+base.metadata.clear()
+oldDBN = 'sqlite:///markets.db'
+
+path = os.path.abspath(os.getcwd()) + "/markets.db"
+
+newDBN = 'sqlite:///' + path
+
+print(newDBN)
+
+
+# create  engine
+engine = create_engine(newDBN)
+# just import the session (:
+session = scoped_session(sessionmaker(bind=engine))
 
 
 
@@ -24,8 +41,13 @@ def deleteAndCommit(x):
         print('Null Value )-: at Line 26 in class util.py  [ %s ]' % x)
 
 
+
+
+
+
 class User(base):
     __tablename__ = 'user'
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True)
     email = Column(String(80), nullable=False)
     name = Column(String(80), nullable=False)
@@ -43,6 +65,7 @@ class User(base):
 
 class Markets(base):
     __tablename__ = 'markets'
+    __table_args__ = {'extend_existing': True}
 
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
@@ -61,6 +84,7 @@ class Markets(base):
 
 class ItemsInMarket(base):
     __tablename__ = 'items_in_market'
+    __table_args__ = {'extend_existing': True}
 
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
@@ -82,10 +106,6 @@ class ItemsInMarket(base):
         }
 
 
-engine = create_engine(dataBaseName)
-
-
-
-
+engine = create_engine(newDBN)
 
 base.metadata.create_all(engine)
